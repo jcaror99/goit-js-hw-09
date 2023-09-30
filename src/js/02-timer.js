@@ -30,6 +30,10 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
+function addLeadingZero(value) {
+  return value.toString().padStart(2, '0');
+}
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -39,16 +43,32 @@ const options = {
     let firstDate = selectedDates[0];
     if (firstDate < currentDate) {
       window.alert('Please choose a date in the future');
-      //   return;
+      return;
     }
     if (firstDate > currentDate) {
       startButton.disabled = false;
       const dateDifference = firstDate.getTime() - currentDate.getTime();
-      const countDown = convertMs(dateDifference);
+      const {
+        days: daysDif,
+        hours: hoursDif,
+        minutes: minutesDif,
+        seconds: secondsDif,
+      } = convertMs(dateDifference);
 
-      console.log('difference', countDown);
-      console.log(hours);
-      //   return;
+      daysDif < 10
+        ? (days.textContent = addLeadingZero(daysDif))
+        : (days.textContent = daysDif.toString());
+      hoursDif < 10
+        ? (hours.textContent = addLeadingZero(hoursDif))
+        : (hours.textContent = hoursDif.toString());
+      minutesDif < 10
+        ? (minutes.textContent = addLeadingZero(minutesDif))
+        : (minutes.textContent = minutesDif.toString());
+      secondsDif < 10
+        ? (seconds.textContent = addLeadingZero(secondsDif))
+        : (seconds.textContent = secondsDif.toString());
+
+      console.log('difference', daysDif, hoursDif, minutesDif, secondsDif);
     }
   },
 };
