@@ -16,3 +16,22 @@ img {
   display: block;
   max-width: 100%;
 }
+
+.timer {
+  display: flex;
+  gap: 14px;
+  margin-top: 5px;
+}
+
+.field {
+  border: 2px;
+  border-color: #212121;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: silver;
+}
+
+span {
+  font-size: 20px;
+}

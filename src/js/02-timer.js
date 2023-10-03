@@ -1,13 +1,17 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/dark.css';
+import Notiflix from 'notiflix';
 
-const currentDate = new Date();
 const startButton = document.querySelector('button');
 const days = document.querySelector('span[data-days]');
 const hours = document.querySelector('span[data-hours]');
 const minutes = document.querySelector('span[data-minutes]');
 const seconds = document.querySelector('span[data-seconds]');
+const currentDate = new Date();
+let firstDate;
+let dateDifference;
+let timerId;
 
 startButton.disabled = true;
 
@@ -40,37 +44,60 @@ const options = {
   defaultDate: currentDate,
   minuteIncrement: 1,
   onClose(selectedDates) {
-    let firstDate = selectedDates[0];
+    firstDate = selectedDates[0];
+    dateDifference = firstDate.getTime() - currentDate.getTime();
     if (firstDate < currentDate) {
-      window.alert('Please choose a date in the future');
+      startButton.disabled = true;
+      Notiflix.Notify.failure('Please choose a date in the future');
       return;
     }
     if (firstDate > currentDate) {
       startButton.disabled = false;
-      const dateDifference = firstDate.getTime() - currentDate.getTime();
-      const {
-        days: daysDif,
-        hours: hoursDif,
-        minutes: minutesDif,
-        seconds: secondsDif,
-      } = convertMs(dateDifference);
-
-      daysDif < 10
-        ? (days.textContent = addLeadingZero(daysDif))
-        : (days.textContent = daysDif.toString());
-      hoursDif < 10
-        ? (hours.textContent = addLeadingZero(hoursDif))
-        : (hours.textContent = hoursDif.toString());
-      minutesDif < 10
-        ? (minutes.textContent = addLeadingZero(minutesDif))
-        : (minutes.textContent = minutesDif.toString());
-      secondsDif < 10
-        ? (seconds.textContent = addLeadingZero(secondsDif))
-        : (seconds.textContent = secondsDif.toString());
-
-      console.log('difference', daysDif, hoursDif, minutesDif, secondsDif);
     }
   },
 };
 
+const counterDown = () => {
+  dateDifference -= 1000;
+
+  if (dateDifference <= 0) {
+    console.log('finished', dateDifference);
+    Notiflix.Notify.success('CounterDown finished');
+    clearInterval(timerId);
+    return;
+  }
+  const {
+    days: daysDif,
+    hours: hoursDif,
+    minutes: minutesDif,
+    seconds: secondsDif,
+  } = convertMs(dateDifference);
+
+  daysDif < 10
+    ? (days.textContent = addLeadingZero(daysDif))
+    : (days.textContent = daysDif.toString());
+  hoursDif < 10
+    ? (hours.textContent = addLeadingZero(hoursDif))
+    : (hours.textContent = hoursDif.toString());
+  minutesDif < 10
+    ? (minutes.textContent = addLeadingZero(minutesDif))
+    : (minutes.textContent = minutesDif.toString());
+  secondsDif < 10
+    ? (seconds.textContent = addLeadingZero(secondsDif))
+    : (seconds.textContent = secondsDif.toString());
+
+  console.log(
+    `difference: ${dateDifference}`,
+    daysDif,
+    hoursDif,
+    minutesDif,
+    secondsDif
+  );
+};
+
+const intervalCounterDown = () => {
+  timerId = setInterval(counterDown, 1000);
+};
+
 flatpickr('#datetime-picker', options);
+startButton.addEventListener('click', intervalCounterDown);
